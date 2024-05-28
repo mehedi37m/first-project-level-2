@@ -83,7 +83,7 @@ const studentSchema = new Schema<TStudent, StudentModel, StudentMethods>({
     enum: ['male', 'female', 'other'],
     required: [true, 'Gender is required.'],
   },
-  dateOfBirth: { type: String },
+  dateOfBirth: { type: Date },
   email: {
     type: String,
     required: true,
@@ -110,6 +110,10 @@ const studentSchema = new Schema<TStudent, StudentModel, StudentMethods>({
     required: true,
   },
   profileImg: { type: String },
+  admissionSemester:{
+    type:Schema.Types.ObjectId,
+    ref:'AcademicSemester'
+  }
 });
 
 studentSchema.methods.isUserExits = async function (id: string) {

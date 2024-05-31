@@ -36,12 +36,13 @@ export type TStudent = {
   emergencyContact: string;
   bloodGroup?: 'A+' | 'A-' | 'B+' | 'B-' | 'AB+' | 'AB-' | 'O+' | 'O-';
   presentAddress: string;
-  permanentContact: string;
+  permanentAddress: string;
   guardian: TGuardian;
   localGuardian: TLocalGuardian;
   profileImg?: string;
   admissionSemester: Types.ObjectId;
   isDeleted: boolean;
+  academicDepartment: Types.ObjectId;
 };
 
 

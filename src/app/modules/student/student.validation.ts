@@ -37,11 +37,12 @@ const UserNameSchema = z.object({
         emergencyContact: z.string().min(1),
         bloodGroup: z.enum(['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-']).optional(),
         presentAddress: z.string().min(1),
-        permanentContact: z.string().min(1),
+        permanentAddress: z.string().min(1),
         guardian: GuardianSchema,
         localGuardian: LocalGuardianSchema,
         profileImg: z.string(),
         admissionSemester:z.string(),
+        academicDepartment:z.string(),
       })
      
     })

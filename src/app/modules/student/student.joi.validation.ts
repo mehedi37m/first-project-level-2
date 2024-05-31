@@ -42,7 +42,7 @@ const userNameSchema = Joi.object({
       .valid('A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-')
       .allow(null),
     presentAddress: Joi.string().required(),
-    permanentContact: Joi.string().required(),
+    permanentAddress: Joi.string().required(),
     guardian: guardianSchema.required(),
     localGuardian: localGuardianSchema.required(),
     profileImg: Joi.string().allow(null),

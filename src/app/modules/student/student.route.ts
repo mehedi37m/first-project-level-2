@@ -8,10 +8,10 @@ const router = express.Router();
 
 router.get('/', StudentController.getAllStudent);
 
-router.get('/:studentId', StudentController.getSingleStudent);
+router.get('/:id', StudentController.getSingleStudent);
 
-router.delete('/:studentId', StudentController.deleteStudent);
+router.patch('/:id',validateRequest(updateStudentValidationSchema), StudentController.updateStudent);
 
-router.patch('/:studentId',validateRequest(updateStudentValidationSchema), StudentController.updateStudent);
+router.delete('/:id', StudentController.deleteStudent);
 
 export const StudentRoutes = router;

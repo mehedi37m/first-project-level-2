@@ -121,6 +121,33 @@ const studentSchema = new Schema<TStudent, StudentModel, StudentMethods>({
     type: Schema.Types.ObjectId,
     ref: 'AcademicDepartment',
   },
+},
+{
+  toJSON: {
+    virtuals: true,
+  },
+}
+);
+
+//virtual
+studentSchema.virtual('fullName').get(function () {
+  return this?.name?.firstName + this?.name?.middleName + this?.name?.lastName;
+});
+
+// Query Middleware
+studentSchema.pre('find', function (next) {
+  this.find({ isDeleted: { $ne: true } });
+  next();
+});
+
+studentSchema.pre('findOne', function (next) {
+  this.find({ isDeleted: { $ne: true } });
+  next();
+});
+
+studentSchema.pre('aggregate', function (next) {
+  this.pipeline().unshift({ $match: { isDeleted: { $ne: true } } });
+  next();
 });
 
 studentSchema.methods.isUserExits = async function (id: string) {

@@ -4,51 +4,93 @@ import AppError from '../../errors/AppError';
 import { User } from '../user/user.model';
 import httpStatus from 'http-status';
 import { TStudent } from './student.interface';
+import QueryBuilder from '../../builder/QueryBuilder';
+import { studentSearchField } from './student.constant';
 
 const getAllStudentFromDB = async (query: Record<string, unknown>) => {
-  const queryObj = {...query}    //copy query 
+  // const queryObj = {...query}    //copy query
 
-  const studentSearchField = ['email','name.fistName','name.lastName','presentAddress'];
-  let searchTerm = '';
+  // const studentSearchField = ['email','name.fistName','name.lastName','presentAddress'];
+  // let searchTerm = '';
 
-  if(query?.searchTerm){
-    searchTerm = query?.searchTerm as string;
-  }
+  // if(query?.searchTerm){
+  //   searchTerm = query?.searchTerm as string;
+  // }
 
-  const searchQuery = Student.find({
-    $or:studentSearchField.map((field) => ({
-      [field] : {$regex: searchTerm, $options:'i'}
-    }))
-  });
+  // const searchQuery = Student.find({
+  //   $or:studentSearchField.map((field) => ({
+  //     [field] : {$regex: searchTerm, $options:'i'}
+  //   }))
+  // });
 
-  const excludeFields = ['searchTerm','sort','limit']
+  // const excludeFields = ['searchTerm','sort','limit','page','fields']
 
-  excludeFields.forEach((el) => delete queryObj[el])
-  
-  const filterQuery = searchQuery.find(queryObj)
-    .populate('admissionSemester')
-    .populate({
-      path: 'academicDepartment',
-      populate: {
-        path: 'academicFaculty',
-      },
-    });
+  // excludeFields.forEach((el) => delete queryObj[el])
 
-   let sort = '-createdAt'
-   if(query.sort){
-    sort = query.sort as string;
-   }
+  // const filterQuery = searchQuery.find(queryObj)
+  //   .populate('admissionSemester')
+  //   .populate({
+  //     path: 'academicDepartment',
+  //     populate: {
+  //       path: 'academicFaculty',
+  //     },
+  //   });
 
-   const sortQuery = filterQuery.sort(sort);
+  //  let sort = '-createdAt'
+  //  if(query.sort){
+  //   sort = query.sort as string;
+  //  }
 
-   let limit = 1;
-   if(query.limit){
-    limit = query.limit; 
-   }
+  //  const sortQuery = filterQuery.sort(sort);
 
-   const limitQuery = await sortQuery.limit(limit)
+  //  let page = 1;
+  //  let limit = 1;
+  //  let skip = 0;
 
-  return limitQuery;
+  //  if(query.limit){
+  //   limit = Number(query.limit);
+  //  }
+
+  //  if(query.page){
+  //   page = Number(query.page);
+  //   skip = (page - 1)*limit
+  //  }
+
+  //  const paginateQuery = sortQuery.skip(skip)
+
+  //  const limitQuery = paginateQuery.limit(limit)
+
+  //  let fields = '__v';
+
+  //  if(query.fields){
+  //   fields = (query.fields as string).split(",").join(" ");
+  //   console.log(fields)
+  //  }
+
+  //  const fieldsQuery = await limitQuery.select(fields)
+
+  // return fieldsQuery;
+
+  const studentQuery = new QueryBuilder(
+    Student.find()
+      .populate('admissionSemester')
+      .populate({
+        path: 'academicDepartment',
+        populate: {
+          path: 'academicFaculty',
+        },
+      }),
+    query,
+  )
+    .search(studentSearchField)
+    .filter()
+    .sort()
+    .paginate()
+    .fields();
+
+  const result = await studentQuery.modelQuery;
+
+  return result;
 };
 const getSingleStudentFromDB = async (id: string) => {
   const result = await Student.findOne({ id })
@@ -126,7 +168,7 @@ const deleteStudentFromDB = async (id: string) => {
     await session.commitTransaction();
     await session.endSession();
 
-    return deletedStudent; 
+    return deletedStudent;
   } catch (err: any) {
     await session.abortTransaction();
     await session.endSession();
